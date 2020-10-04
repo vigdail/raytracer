@@ -1,6 +1,9 @@
 use canvas::Canvas;
+use ray::Ray;
+use vector::Vector3;
 
 pub mod canvas;
+pub mod ray;
 pub mod vector;
 
 pub struct Color {
@@ -19,6 +22,14 @@ impl Color {
             a: 1.0,
         }
     }
+
+    pub fn rgba(r: f32, g: f32, b: f32, a: f32) -> Color {
+        Color { r, g, b, a }
+    }
+
+    pub fn rgb(r: f32, g: f32, b: f32) -> Color {
+        Color::rgba(r, g, b, 1.0)
+    }
 }
 
 pub struct Raytacer<'a> {
@@ -35,7 +46,7 @@ impl<'a> Raytacer<'a> {
     }
 
     pub fn render(&mut self) {
-        self.canvas.set_color(&self.background);
+        // self.canvas.set_color(&self.background);
         self.canvas.clear();
 
         self.draw_gradient();
@@ -45,17 +56,30 @@ impl<'a> Raytacer<'a> {
         let width = self.canvas.width();
         let height = self.canvas.height();
 
-        let mut color = Color::new();
+        let aspect = width as f32 / height as f32;
 
-        color.b = 0.2;
+        let left_botton = Vector3::xyz(-0.5 * aspect, -0.5 * aspect, -1.0);
+        let horizontal = Vector3::xyz(1.0 * aspect, 0.0, 0.0);
+        let vertical = Vector3::xyz(0.0, 1.0 * aspect, 0.0);
+        let origin = Vector3::new();
 
         for j in 0..height {
             for i in 0..width {
-                color.r = i as f32 / width as f32;
-                color.g = (height - 1 - j) as f32 / height as f32;
+                let u = i as f32 / width as f32;
+                let v = j as f32 / height as f32;
+                let direction = left_botton + u * horizontal + v * vertical;
+                let ray = Ray::new(origin, direction);
+                let color = color(&ray);
                 self.canvas.set_color(&color);
-                self.canvas.draw_point(i, j);
+                self.canvas.draw_point(i, height - j - 1);
             }
         }
     }
+}
+
+fn color(ray: &Ray) -> Color {
+    let n = ray.direction().normalized();
+    let t = 0.5 * (n.y + 1.0);
+    let v = (1.0 - t) * Vector3::xyz(1.0, 1.0, 1.0) + t * Vector3::xyz(0.5, 0.7, 1.0);
+    Color::rgb(v.x, v.y, v.z)
 }
