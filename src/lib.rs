@@ -78,8 +78,21 @@ impl<'a> Raytacer<'a> {
 }
 
 fn ray_color(ray: &Ray) -> Color {
+    if hit_sphere(&Vector3::xyz(0.0, 0.0, -1.0), 0.5, ray) {
+        return Color::rgb(1.0, 0.0, 0.0);
+    }
     let n = ray.direction().normalized();
     let t = 0.5 * (n.y + 1.0);
     let v = (1.0 - t) * Vector3::xyz(1.0, 1.0, 1.0) + t * Vector3::xyz(0.5, 0.7, 1.0);
     Color::rgb(v.x, v.y, v.z)
+}
+
+fn hit_sphere(center: &Vector3, radius: f32, ray: &Ray) -> bool {
+    let oc = ray.origin() - *center;
+    let a = ray.direction() * ray.direction();
+    let b = 2.0 * oc * ray.direction();
+    let c = oc * oc - radius * radius;
+    let discriminant = b * b - 4.0 * a * c;
+
+    discriminant > 0.0
 }
