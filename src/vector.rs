@@ -27,19 +27,35 @@ impl Vector3 {
     }
 }
 
-impl std::ops::Add<Vector3> for Vector3 {
+impl std::ops::Add<&Vector3> for &Vector3 {
     type Output = Vector3;
 
-    fn add(self, rhs: Vector3) -> Self::Output {
+    fn add(self, rhs: &Vector3) -> Self::Output {
         Vector3::xyz(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
 }
 
-impl std::ops::Sub<Vector3> for Vector3 {
+impl std::ops::AddAssign<&Vector3> for Vector3 {
+    fn add_assign(&mut self, rhs: &Vector3) {
+        self.x += rhs.x;
+        self.y += rhs.y;
+        self.z += rhs.z;
+    }
+}
+
+impl std::ops::Sub<&Vector3> for &Vector3 {
     type Output = Vector3;
 
-    fn sub(self, rhs: Vector3) -> Self::Output {
+    fn sub(self, rhs: &Vector3) -> Self::Output {
         Vector3::xyz(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+    }
+}
+
+impl std::ops::SubAssign<&Vector3> for Vector3 {
+    fn sub_assign(&mut self, rhs: &Vector3) {
+        self.x -= rhs.x;
+        self.y -= rhs.y;
+        self.z -= rhs.z;
     }
 }
 
@@ -51,22 +67,6 @@ impl std::ops::Mul<&Vector3> for &Vector3 {
     }
 }
 
-impl std::ops::Mul<Vector3> for Vector3 {
-    type Output = f32;
-
-    fn mul(self, rhs: Vector3) -> Self::Output {
-        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
-    }
-}
-
-impl std::ops::Mul<Vector3> for f32 {
-    type Output = Vector3;
-
-    fn mul(self, rhs: Vector3) -> Self::Output {
-        Vector3::xyz(self * rhs.x, self * rhs.y, self * rhs.z)
-    }
-}
-
 impl std::ops::Mul<&Vector3> for f32 {
     type Output = Vector3;
 
@@ -75,7 +75,7 @@ impl std::ops::Mul<&Vector3> for f32 {
     }
 }
 
-impl std::ops::Mul<f32> for Vector3 {
+impl std::ops::Mul<f32> for &Vector3 {
     type Output = Vector3;
 
     fn mul(self, rhs: f32) -> Self::Output {
@@ -91,7 +91,7 @@ impl std::ops::MulAssign<f32> for Vector3 {
     }
 }
 
-impl std::ops::Div<f32> for Vector3 {
+impl std::ops::Div<f32> for &Vector3 {
     type Output = Vector3;
 
     fn div(self, rhs: f32) -> Self::Output {
@@ -107,11 +107,22 @@ impl std::ops::DivAssign<f32> for Vector3 {
     }
 }
 
-impl std::ops::Neg for Vector3 {
+impl std::ops::Neg for &Vector3 {
     type Output = Vector3;
 
     fn neg(self) -> Self::Output {
         Vector3::xyz(-self.x, -self.y, -self.z)
+    }
+}
+
+impl std::ops::BitXor<&Vector3> for &Vector3 {
+    type Output = Vector3;
+
+    fn bitxor(self, rhs: &Vector3) -> Self::Output {
+        let x = self.y * rhs.z - self.y * rhs.z;
+        let y = self.z * rhs.x - self.x * rhs.z;
+        let z = self.x * rhs.y - self.y * rhs.x;
+        Vector3::xyz(x, y, z)
     }
 }
 
@@ -156,7 +167,7 @@ mod test {
 
         let expected = Vector3::xyz(5.0, 5.0, 5.0);
 
-        assert_eq!(a + b, expected);
+        assert_eq!(&a + &b, expected);
     }
 
     #[test]
@@ -166,7 +177,7 @@ mod test {
 
         let expected = 6.0 + 6.0 + 0.0;
 
-        assert_eq!(a * b, expected);
+        assert_eq!(&a * &b, expected);
     }
 
     #[test]
@@ -191,7 +202,7 @@ mod test {
     #[test]
     fn neg() {
         let a = Vector3::xyz(1.0, 2.0, -3.0);
-        let b = -a;
+        let b = -&a;
 
         assert_eq!(a.length(), b.length());
         assert_eq!(
@@ -202,5 +213,15 @@ mod test {
                 z: 3.0
             }
         )
+    }
+
+    #[test]
+    fn cross() {
+        let a = Vector3::xyz(1.0, 0.0, 0.0);
+        let b = Vector3::xyz(0.0, 1.0, 0.0);
+
+        let expect = Vector3::xyz(0.0, 0.0, 1.0);
+
+        assert_eq!(&a ^ &b, expect);
     }
 }
