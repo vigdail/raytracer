@@ -1,36 +1,18 @@
 use canvas::Canvas;
+use color::Color;
+use entity::sphere::Sphere;
+use hit::Hittable;
 use ray::Ray;
+use scene::Scene;
 use vector::Vector3;
 
 pub mod canvas;
+pub mod color;
+pub mod entity;
+pub mod hit;
 pub mod ray;
+pub mod scene;
 pub mod vector;
-
-pub struct Color {
-    pub r: f32,
-    pub g: f32,
-    pub b: f32,
-    pub a: f32,
-}
-
-impl Color {
-    pub fn new() -> Self {
-        Self {
-            r: 0.0,
-            g: 0.0,
-            b: 0.0,
-            a: 1.0,
-        }
-    }
-
-    pub fn rgba(r: f32, g: f32, b: f32, a: f32) -> Color {
-        Color { r, g, b, a }
-    }
-
-    pub fn rgb(r: f32, g: f32, b: f32) -> Color {
-        Color::rgba(r, g, b, 1.0)
-    }
-}
 
 pub struct Raytacer<'a> {
     canvas: &'a mut dyn Canvas,
@@ -42,10 +24,10 @@ impl<'a> Raytacer<'a> {
     }
 
     pub fn render(&mut self) {
-        self.draw_gradient();
+        self.draw_scene();
     }
 
-    fn draw_gradient(&mut self) {
+    fn draw_scene(&mut self) {
         let width = self.canvas.width();
         let height = self.canvas.height();
 
@@ -61,14 +43,16 @@ impl<'a> Raytacer<'a> {
         let left_botton =
             origin - horizontal * 0.5 - vertical * 0.5 - Vector3::xyz(0.0, 0.0, focal_length);
 
-        for j in (0..height).rev() {
+        let scene = create_scene();
+
+        for j in 0..height {
             for i in 0..width {
                 let u = i as f32 / width as f32;
                 let v = j as f32 / height as f32;
 
-                let direction = left_botton + u * horizontal + v * vertical;
+                let direction = left_botton + u * horizontal + v * vertical - origin;
                 let ray = Ray::new(origin, direction);
-                let color = ray_color(&ray);
+                let color = ray_color(&ray, &scene);
 
                 self.canvas.draw_point(&color, i, height - j - 1);
             }
@@ -77,22 +61,26 @@ impl<'a> Raytacer<'a> {
     }
 }
 
-fn ray_color(ray: &Ray) -> Color {
-    if hit_sphere(&Vector3::xyz(0.0, 0.0, -1.0), 0.5, ray) {
-        return Color::rgb(1.0, 0.0, 0.0);
+fn ray_color(ray: &Ray, scene: &Scene) -> Color {
+    if let Some(hit) = scene.hit(ray, 0.0, 1.0) {
+        let c = 0.5 * (hit.normal + Vector3::xyz(1.0, 1.0, 1.0));
+        return Color::rgb(c.x, c.y, c.z);
     }
-    let n = ray.direction().normalized();
-    let t = 0.5 * (n.y + 1.0);
+    let dir = ray.direction().normalized();
+    let t = 0.5 * (dir.y + 1.0);
     let v = (1.0 - t) * Vector3::xyz(1.0, 1.0, 1.0) + t * Vector3::xyz(0.5, 0.7, 1.0);
     Color::rgb(v.x, v.y, v.z)
 }
 
-fn hit_sphere(center: &Vector3, radius: f32, ray: &Ray) -> bool {
-    let oc = ray.origin() - *center;
-    let a = ray.direction() * ray.direction();
-    let b = 2.0 * oc * ray.direction();
-    let c = oc * oc - radius * radius;
-    let discriminant = b * b - 4.0 * a * c;
+fn create_scene() -> Scene {
+    let mut scene = Scene::new();
+    scene.add(Box::new(Sphere::new(
+        Vector3::xyz(0.0, -100.5, -1.0),
+        100.0,
+    )));
+    scene.add(Box::new(Sphere::new(Vector3::xyz(0.0, 0.0, -1.0), 0.5)));
+    scene.add(Box::new(Sphere::new(Vector3::xyz(1.0, 0.0, -1.0), 0.5)));
+    scene.add(Box::new(Sphere::new(Vector3::xyz(-1.0, 0.0, -1.0), 0.5)));
 
-    discriminant > 0.0
+    scene
 }
