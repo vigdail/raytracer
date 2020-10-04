@@ -1,7 +1,9 @@
-use sdl2::{pixels::Color, rect::Point, video::Window};
+use sdl2::{pixels, rect::Point, video::Window};
+
+use crate::Color;
 
 pub trait Canvas {
-    fn set_color(&mut self, color: &crate::Color);
+    fn set_color(&mut self, color: &Color);
     fn draw_point(&mut self, x: u32, y: u32);
     fn width(&self) -> u32;
     fn height(&self) -> u32;
@@ -10,8 +12,8 @@ pub trait Canvas {
 }
 
 impl Canvas for sdl2::render::Canvas<Window> {
-    fn set_color(&mut self, color: &crate::Color) {
-        self.set_draw_color(Color::RGBA(
+    fn set_color(&mut self, color: &Color) {
+        self.set_draw_color(pixels::Color::RGBA(
             (color.r * 255.0) as u8,
             (color.g * 255.0) as u8,
             (color.b * 255.0) as u8,

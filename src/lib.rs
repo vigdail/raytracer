@@ -37,16 +37,24 @@ impl<'a> Raytacer<'a> {
         self.canvas.set_color(&self.background);
         self.canvas.clear();
 
+        self.draw_gradient();
+    }
+
+    fn draw_gradient(&mut self) {
+        let width = self.canvas.width();
+        let height = self.canvas.height();
+
         let mut color = Color::new();
-        color.r = 0.5;
-        color.g = 0.3;
+
         color.b = 0.2;
 
-        self.canvas.set_color(&color);
-        for i in 20..self.canvas.width() - 20 {
-            self.canvas.draw_point(i, 20);
+        for j in 0..height {
+            for i in 0..width {
+                color.r = i as f32 / width as f32;
+                color.g = (height - 1 - j) as f32 / height as f32;
+                self.canvas.set_color(&color);
+                self.canvas.draw_point(i, j);
+            }
         }
-
-        self.canvas.flush();
     }
 }
