@@ -33,22 +33,15 @@ impl Color {
 }
 
 pub struct Raytacer<'a> {
-    background: Color,
     canvas: &'a mut dyn Canvas,
 }
 
 impl<'a> Raytacer<'a> {
     pub fn new(canvas: &'a mut dyn Canvas) -> Raytacer {
-        Raytacer {
-            background: Color::new(),
-            canvas,
-        }
+        Raytacer { canvas }
     }
 
     pub fn render(&mut self) {
-        // self.canvas.set_color(&self.background);
-        self.canvas.clear();
-
         self.draw_gradient();
     }
 
@@ -58,26 +51,33 @@ impl<'a> Raytacer<'a> {
 
         let aspect = width as f32 / height as f32;
 
-        let left_botton = Vector3::xyz(-0.5 * aspect, -0.5 * aspect, -1.0);
-        let horizontal = Vector3::xyz(1.0 * aspect, 0.0, 0.0);
-        let vertical = Vector3::xyz(0.0, 1.0 * aspect, 0.0);
-        let origin = Vector3::new();
+        let viewport_height = 2.0;
+        let viewport_width = viewport_height * aspect;
+        let focal_length = 1.0;
 
-        for j in 0..height {
+        let origin = Vector3::new();
+        let horizontal = Vector3::xyz(viewport_width, 0.0, 0.0);
+        let vertical = Vector3::xyz(0.0, viewport_height, 0.0);
+        let left_botton =
+            origin - horizontal * 0.5 - vertical * 0.5 - Vector3::xyz(0.0, 0.0, focal_length);
+
+        for j in (0..height).rev() {
             for i in 0..width {
                 let u = i as f32 / width as f32;
                 let v = j as f32 / height as f32;
+
                 let direction = left_botton + u * horizontal + v * vertical;
                 let ray = Ray::new(origin, direction);
-                let color = color(&ray);
-                self.canvas.set_color(&color);
-                self.canvas.draw_point(i, height - j - 1);
+                let color = ray_color(&ray);
+
+                self.canvas.draw_point(&color, i, height - j - 1);
             }
         }
+        println!("Done");
     }
 }
 
-fn color(ray: &Ray) -> Color {
+fn ray_color(ray: &Ray) -> Color {
     let n = ray.direction().normalized();
     let t = 0.5 * (n.y + 1.0);
     let v = (1.0 - t) * Vector3::xyz(1.0, 1.0, 1.0) + t * Vector3::xyz(0.5, 0.7, 1.0);

@@ -11,7 +11,7 @@ fn main() -> Result<(), String> {
     let video_subsystem = sdl_context.video()?;
 
     let window = video_subsystem
-        .window("Raytracer", 800, 600)
+        .window("Raytracer", 1920 / 2, 1080 / 2)
         .position_centered()
         .build()
         .map_err(|e| e.to_string())?;
