@@ -1,33 +1,24 @@
-use rand::{prelude::ThreadRng, Rng};
-
-use crate::vector::Vector3;
+use rand::Rng;
 
 pub trait Random {
-    fn random(rng: &mut ThreadRng) -> Self;
+    fn random() -> Self;
 }
 
 impl Random for f32 {
-    fn random(rng: &mut ThreadRng) -> Self {
+    fn random() -> Self {
+        let mut rng = rand::thread_rng();
         rng.gen()
     }
 }
 
 pub trait RandomRange<T = Self> {
-    fn random_range(rng: &mut ThreadRng, min: T, max: T) -> Self;
+    fn random_range(min: T, max: T) -> Self;
 }
 
 impl RandomRange for f32 {
-    fn random_range(rng: &mut ThreadRng, min: Self, max: Self) -> Self {
+    fn random_range(min: Self, max: Self) -> Self {
+        let mut rng = rand::thread_rng();
         rng.gen_range(min, max)
-    }
-}
-
-pub fn random_in_unit_sphere(rng: &mut ThreadRng) -> Vector3 {
-    loop {
-        let p = Vector3::random_range(rng, -1.0, 1.0);
-        if p.squared_length() <= 1.0 {
-            return p;
-        }
     }
 }
 

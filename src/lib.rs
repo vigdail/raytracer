@@ -8,7 +8,7 @@ use hit::Hittable;
 use rand::prelude::ThreadRng;
 use ray::Ray;
 use scene::Scene;
-use util::{random_in_unit_sphere, Random};
+use util::Random;
 use vector::Vector3;
 
 mod camera;
@@ -23,15 +23,11 @@ mod vector;
 
 pub struct Raytacer<'a> {
     canvas: &'a mut dyn Canvas,
-    rng: ThreadRng,
 }
 
 impl<'a> Raytacer<'a> {
     pub fn new(canvas: &'a mut dyn Canvas) -> Raytacer {
-        Raytacer {
-            canvas,
-            rng: rand::thread_rng(),
-        }
+        Raytacer { canvas }
     }
 
     pub fn render(&mut self) {
@@ -55,8 +51,8 @@ impl<'a> Raytacer<'a> {
             for i in 0..width {
                 let mut color = Color::new();
                 for _ in 0..samples {
-                    let di = f32::random(&mut self.rng);
-                    let dj = f32::random(&mut self.rng);
+                    let di = f32::random();
+                    let dj = f32::random();
                     let u = (i as f32 + di) / width as f32;
                     let v = (j as f32 + dj) / height as f32;
                     let ray = camera.ray(u, v);
@@ -79,7 +75,7 @@ impl<'a> Raytacer<'a> {
         }
 
         if let Some(hit) = scene.hit(ray, 0.001, std::f32::INFINITY) {
-            let target = hit.point + hit.normal + random_in_unit_sphere(&mut self.rng);
+            let target = hit.point + hit.normal + Vector3::random_in_unit_sphere();
             return 0.5
                 * self.ray_color(&Ray::new(hit.point, target - hit.point), scene, depht - 1);
         }

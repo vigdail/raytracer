@@ -1,4 +1,4 @@
-use rand::{prelude::ThreadRng, Rng};
+use rand::Rng;
 
 use crate::util::{Random, RandomRange};
 
@@ -35,16 +35,27 @@ impl Vector3 {
         r.normalize();
         r
     }
+
+    pub fn random_in_unit_sphere() -> Vector3 {
+        loop {
+            let p = Vector3::random_range(-1.0, 1.0);
+            if p.squared_length() <= 1.0 {
+                return p;
+            }
+        }
+    }
 }
 
 impl Random for Vector3 {
-    fn random(rng: &mut ThreadRng) -> Self {
+    fn random() -> Self {
+        let mut rng = rand::thread_rng();
         Vector3::xyz(rng.gen(), rng.gen(), rng.gen())
     }
 }
 
 impl RandomRange<f32> for Vector3 {
-    fn random_range(rng: &mut ThreadRng, min: f32, max: f32) -> Self {
+    fn random_range(min: f32, max: f32) -> Self {
+        let mut rng = rand::thread_rng();
         Vector3::xyz(
             rng.gen_range(min, max),
             rng.gen_range(min, max),
