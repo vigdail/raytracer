@@ -1,3 +1,7 @@
+use rand::{prelude::ThreadRng, Rng};
+
+use crate::util::{Random, RandomRange};
+
 #[derive(Default, Debug, Clone, Copy)]
 pub struct Vector3 {
     pub x: f32,
@@ -30,6 +34,22 @@ impl Vector3 {
         let mut r = self.clone();
         r.normalize();
         r
+    }
+}
+
+impl Random for Vector3 {
+    fn random(rng: &mut ThreadRng) -> Self {
+        Vector3::xyz(rng.gen(), rng.gen(), rng.gen())
+    }
+}
+
+impl RandomRange<f32> for Vector3 {
+    fn random_range(rng: &mut ThreadRng, min: f32, max: f32) -> Self {
+        Vector3::xyz(
+            rng.gen_range(min, max),
+            rng.gen_range(min, max),
+            rng.gen_range(min, max),
+        )
     }
 }
 

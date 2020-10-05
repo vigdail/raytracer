@@ -10,8 +10,10 @@ fn main() -> Result<(), String> {
     let sdl_context = sdl2::init()?;
     let video_subsystem = sdl_context.video()?;
 
+    let scale = 3;
+
     let window = video_subsystem
-        .window("Raytracer", 1920 / 2, 1080 / 2)
+        .window("Raytracer", 1920 / scale, 1080 / scale)
         .position_centered()
         .build()
         .map_err(|e| e.to_string())?;

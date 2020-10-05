@@ -49,6 +49,32 @@ impl std::ops::AddAssign for Color {
     }
 }
 
+impl std::ops::Mul<f32> for Color {
+    type Output = Color;
+
+    fn mul(self, rhs: f32) -> Self::Output {
+        Color {
+            r: self.r * rhs,
+            g: self.g * rhs,
+            b: self.b * rhs,
+            a: self.a * rhs,
+        }
+    }
+}
+
+impl std::ops::Mul<Color> for f32 {
+    type Output = Color;
+
+    fn mul(self, rhs: Color) -> Self::Output {
+        Color {
+            r: self * rhs.r,
+            g: self * rhs.g,
+            b: self * rhs.b,
+            a: self * rhs.a,
+        }
+    }
+}
+
 impl std::ops::Div<f32> for Color {
     type Output = Color;
 
