@@ -1,3 +1,6 @@
+use crate::util::clamp;
+
+#[derive(Debug)]
 pub struct Color {
     pub r: f32,
     pub g: f32,
@@ -21,5 +24,40 @@ impl Color {
 
     pub fn rgb(r: f32, g: f32, b: f32) -> Color {
         Color::rgba(r, g, b, 1.0)
+    }
+}
+
+impl std::ops::Add for Color {
+    type Output = Color;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Color {
+            r: self.r + rhs.r,
+            g: self.g + rhs.g,
+            b: self.b + rhs.b,
+            a: self.a + rhs.a,
+        }
+    }
+}
+
+impl std::ops::AddAssign for Color {
+    fn add_assign(&mut self, rhs: Self) {
+        self.r = self.r + rhs.r;
+        self.g = self.g + rhs.g;
+        self.b = self.b + rhs.b;
+        self.a = self.a + rhs.a;
+    }
+}
+
+impl std::ops::Div<f32> for Color {
+    type Output = Color;
+
+    fn div(self, rhs: f32) -> Self::Output {
+        Color {
+            r: self.r / rhs,
+            g: self.g / rhs,
+            b: self.b / rhs,
+            a: self.a / rhs,
+        }
     }
 }
