@@ -75,7 +75,7 @@ impl<'a> Raytacer<'a> {
         }
 
         if let Some(hit) = scene.hit(ray, 0.001, std::f32::INFINITY) {
-            let target = hit.point + hit.normal + Vector3::random_in_unit_sphere();
+            let target = hit.point + hit.normal + Vector3::random_unit_vector();
             return 0.5
                 * self.ray_color(&Ray::new(hit.point, target - hit.point), scene, depht - 1);
         }

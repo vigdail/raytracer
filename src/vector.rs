@@ -44,6 +44,14 @@ impl Vector3 {
             }
         }
     }
+
+    pub fn random_unit_vector() -> Vector3 {
+        let a = f32::random_range(0.0, std::f32::consts::PI * 2.0);
+        let z = f32::random_range(-1.0, 1.0);
+        let r = (1.0 - z * z).sqrt();
+
+        Vector3::xyz(r * a.cos(), r * a.sin(), z)
+    }
 }
 
 impl Random for Vector3 {
