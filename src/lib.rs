@@ -1,3 +1,5 @@
+use std::time::SystemTime;
+
 use camera::Camera;
 use canvas::Canvas;
 use color::Color;
@@ -42,12 +44,16 @@ impl<'a> Raytacer<'a> {
         let samples = 4;
         let mut random = Random::new();
 
+        let now = SystemTime::now();
+
         for j in 0..height {
             for i in 0..width {
                 let mut color = Color::new();
                 for _ in 0..samples {
-                    let u = (i as f32 + random.random()) / width as f32;
-                    let v = (j as f32 + random.random()) / height as f32;
+                    let di = random.random();
+                    let dj = random.random();
+                    let u = (i as f32 + di) / width as f32;
+                    let v = (j as f32 + dj) / height as f32;
                     let ray = camera.ray(u, v);
                     color += ray_color(&ray, &scene);
                 }
@@ -56,7 +62,8 @@ impl<'a> Raytacer<'a> {
                 self.canvas.draw_point(&color, i, height - j - 1);
             }
         }
-        println!("Done");
+
+        println!("Done: {} ms", now.elapsed().unwrap().as_millis());
     }
 }
 
