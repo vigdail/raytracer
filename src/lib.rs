@@ -68,7 +68,7 @@ impl<'a> Raytacer<'a> {
 }
 
 fn ray_color(ray: &Ray, scene: &Scene) -> Color {
-    if let Some(hit) = scene.hit(ray, 0.0, 1.0) {
+    if let Some(hit) = scene.hit(ray, 0.0, std::f32::INFINITY) {
         let c = 0.5 * (hit.normal + Vector3::xyz(1.0, 1.0, 1.0));
         return Color::rgb(c.x, c.y, c.z);
     }
