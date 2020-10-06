@@ -1,5 +1,3 @@
-use crate::util::clamp;
-
 #[derive(Debug)]
 pub struct Color {
     pub r: f32,

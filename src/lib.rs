@@ -5,7 +5,6 @@ use canvas::Canvas;
 use color::Color;
 use entity::sphere::Sphere;
 use hit::Hittable;
-use rand::prelude::ThreadRng;
 use ray::Ray;
 use scene::Scene;
 use util::Random;
