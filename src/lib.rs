@@ -3,9 +3,9 @@ use std::{rc::Rc, time::SystemTime};
 use camera::Camera;
 use canvas::Canvas;
 use color::Color;
-use entity::sphere::Sphere;
+use entity::{sphere::Sphere, Entity};
 use hit::Hittable;
-use material::{Lambertian, Metal};
+use material::{Lambertian, Material, Metal, Scatterable};
 use ray::Ray;
 use scene::Scene;
 use util::Random;
@@ -91,32 +91,32 @@ impl<'a> Raytacer<'a> {
 
 fn create_scene() -> Scene {
     let mut scene = Scene::new();
-    scene.add(Box::new(Sphere::new(
+    scene.add(Entity::Sphere(Sphere::new(
         Vector3::xyz(0.0, -100.5, -1.0),
         100.0,
-        Rc::new(Lambertian {
+        Material::Lambertian(Lambertian {
             albedo: Color::rgb(0.8, 0.8, 0.0),
         }),
     )));
 
-    scene.add(Box::new(Sphere::new(
+    scene.add(Entity::Sphere(Sphere::new(
         Vector3::xyz(0.0, 0.0, -1.0),
         0.5,
-        Rc::new(Lambertian {
+        Material::Lambertian(Lambertian {
             albedo: Color::rgb(0.7, 0.3, 0.3),
         }),
     )));
-    scene.add(Box::new(Sphere::new(
+    scene.add(Entity::Sphere(Sphere::new(
         Vector3::xyz(1.0, 0.0, -1.0),
         0.5,
-        Rc::new(Metal {
+        Material::Metal(Metal {
             albedo: Color::rgb(0.8, 0.6, 0.2),
         }),
     )));
-    scene.add(Box::new(Sphere::new(
+    scene.add(Entity::Sphere(Sphere::new(
         Vector3::xyz(-1.0, 0.0, -1.0),
         0.5,
-        Rc::new(Metal {
+        Material::Metal(Metal {
             albedo: Color::rgb(0.8, 0.8, 0.8),
         }),
     )));

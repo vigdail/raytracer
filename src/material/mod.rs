@@ -1,23 +1,35 @@
-use std::fmt::Debug;
-
 use crate::{color::Color, hit::HitRecord, ray::Ray, vector::Vector3};
 
-#[derive(Debug)]
 pub struct ScatterRecord {
     pub ray: Ray,
     pub attenuation: Color,
 }
 
-pub trait Material: Debug {
+pub trait Scatterable {
     fn scatter(&self, ray: &Ray, hit: &HitRecord) -> Option<ScatterRecord>;
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Copy)]
+pub enum Material {
+    Lambertian(Lambertian),
+    Metal(Metal),
+}
+
+impl Scatterable for Material {
+    fn scatter(&self, ray: &Ray, hit: &HitRecord) -> Option<ScatterRecord> {
+        match *self {
+            Material::Lambertian(ref inner) => inner.scatter(ray, hit),
+            Material::Metal(ref inner) => inner.scatter(ray, hit),
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
 pub struct Lambertian {
     pub albedo: Color,
 }
 
-impl Material for Lambertian {
+impl Scatterable for Lambertian {
     fn scatter(&self, _ray: &Ray, hit: &HitRecord) -> Option<ScatterRecord> {
         let scatter_direction = hit.normal + Vector3::random_unit_vector();
 
@@ -30,7 +42,7 @@ impl Material for Lambertian {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Copy)]
 pub struct Metal {
     pub albedo: Color,
 }
@@ -41,7 +53,7 @@ impl Metal {
     }
 }
 
-impl Material for Metal {
+impl Scatterable for Metal {
     fn scatter(&self, ray: &Ray, hit: &HitRecord) -> Option<ScatterRecord> {
         let reflected = Metal::reflect(ray.direction(), hit.normal);
         let scattered = Ray::new(hit.point, reflected);

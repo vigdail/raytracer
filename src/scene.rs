@@ -1,10 +1,11 @@
 use crate::{
+    entity::Entity,
     hit::{HitRecord, Hittable},
     ray::Ray,
 };
 
 pub struct Scene {
-    entities: Vec<Box<dyn Hittable>>,
+    entities: Vec<Entity>,
 }
 
 impl Scene {
@@ -14,7 +15,7 @@ impl Scene {
         }
     }
 
-    pub fn add(&mut self, entity: Box<dyn Hittable>) {
+    pub fn add(&mut self, entity: Entity) {
         self.entities.push(entity);
     }
 }

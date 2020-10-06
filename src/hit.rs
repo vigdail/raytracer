@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use crate::{material::Material, ray::Ray, vector::Vector3};
 
 #[derive(Debug, Clone)]
@@ -14,11 +12,10 @@ impl Default for Face {
     }
 }
 
-#[derive(Debug)]
 pub struct HitRecord {
     pub point: Vector3,
     pub normal: Vector3,
-    pub material: Rc<dyn Material>,
+    pub material: Material,
     pub t: f32,
     pub face: Face,
 }
