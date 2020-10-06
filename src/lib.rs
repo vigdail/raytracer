@@ -1,10 +1,11 @@
-use std::time::SystemTime;
+use std::{rc::Rc, time::SystemTime};
 
 use camera::Camera;
 use canvas::Canvas;
 use color::Color;
 use entity::sphere::Sphere;
 use hit::Hittable;
+use material::{Lambertian, Metal};
 use ray::Ray;
 use scene::Scene;
 use util::Random;
@@ -15,6 +16,7 @@ mod canvas;
 mod color;
 mod entity;
 mod hit;
+mod material;
 mod ray;
 mod scene;
 mod util;
@@ -41,7 +43,7 @@ impl<'a> Raytacer<'a> {
 
         let scene = create_scene();
 
-        let samples = 4;
+        let samples = 100;
         let max_depth = 50;
 
         let now = SystemTime::now();
@@ -74,9 +76,10 @@ impl<'a> Raytacer<'a> {
         }
 
         if let Some(hit) = scene.hit(ray, 0.001, std::f32::INFINITY) {
-            let target = hit.point + hit.normal + Vector3::random_unit_vector();
-            return 0.5
-                * self.ray_color(&Ray::new(hit.point, target - hit.point), scene, depht - 1);
+            if let Some(scatter) = hit.material.scatter(ray, &hit) {
+                return scatter.attenuation * self.ray_color(&scatter.ray, scene, depht - 1);
+            }
+            return Color::new();
         }
 
         let dir = ray.direction().normalized();
@@ -91,8 +94,32 @@ fn create_scene() -> Scene {
     scene.add(Box::new(Sphere::new(
         Vector3::xyz(0.0, -100.5, -1.0),
         100.0,
+        Rc::new(Box::new(Lambertian {
+            albedo: Color::rgb(0.8, 0.8, 0.0),
+        })),
     )));
-    scene.add(Box::new(Sphere::new(Vector3::xyz(0.0, 0.0, -1.0), 0.5)));
+
+    scene.add(Box::new(Sphere::new(
+        Vector3::xyz(0.0, 0.0, -1.0),
+        0.5,
+        Rc::new(Box::new(Lambertian {
+            albedo: Color::rgb(0.7, 0.3, 0.3),
+        })),
+    )));
+    scene.add(Box::new(Sphere::new(
+        Vector3::xyz(1.0, 0.0, -1.0),
+        0.5,
+        Rc::new(Box::new(Metal {
+            albedo: Color::rgb(0.8, 0.6, 0.2),
+        })),
+    )));
+    scene.add(Box::new(Sphere::new(
+        Vector3::xyz(-1.0, 0.0, -1.0),
+        0.5,
+        Rc::new(Box::new(Metal {
+            albedo: Color::rgb(0.8, 0.8, 0.8),
+        })),
+    )));
 
     scene
 }

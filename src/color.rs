@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Color {
     pub r: f32,
     pub g: f32,
@@ -69,6 +69,19 @@ impl std::ops::Mul<Color> for f32 {
             g: self * rhs.g,
             b: self * rhs.b,
             a: self * rhs.a,
+        }
+    }
+}
+
+impl std::ops::Mul<Color> for Color {
+    type Output = Color;
+
+    fn mul(self, rhs: Color) -> Self::Output {
+        Color {
+            r: self.r * rhs.r,
+            g: self.g * rhs.g,
+            b: self.b * rhs.b,
+            a: self.a * rhs.a,
         }
     }
 }

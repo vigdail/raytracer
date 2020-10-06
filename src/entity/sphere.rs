@@ -1,13 +1,20 @@
-use crate::{hit::HitRecord, hit::Hittable, ray::Ray, vector::Vector3};
+use std::rc::Rc;
+
+use crate::{hit::HitRecord, hit::Hittable, material::Material, ray::Ray, vector::Vector3};
 
 pub struct Sphere {
     center: Vector3,
     radius: f32,
+    material: Rc<Box<dyn Material>>,
 }
 
 impl Sphere {
-    pub fn new(center: Vector3, radius: f32) -> Self {
-        Self { center, radius }
+    pub fn new(center: Vector3, radius: f32, material: Rc<Box<dyn Material>>) -> Self {
+        Self {
+            center,
+            radius,
+            material,
+        }
     }
 }
 
@@ -45,6 +52,7 @@ impl Hittable for Sphere {
         let record = HitRecord {
             t,
             point: hit_point,
+            material: self.material.clone(),
             normal,
             face,
         };

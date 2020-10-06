@@ -52,6 +52,16 @@ impl Vector3 {
 
         Vector3::xyz(r * a.cos(), r * a.sin(), z)
     }
+
+    pub fn random_in_hemisphere(normal: Vector3) -> Vector3 {
+        let v = Vector3::random_in_unit_sphere();
+
+        if v * normal > 0.0 {
+            v
+        } else {
+            -v
+        }
+    }
 }
 
 impl Random for Vector3 {
