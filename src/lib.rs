@@ -5,7 +5,7 @@ use canvas::Canvas;
 use color::Color;
 use entity::{sphere::Sphere, Entity};
 use hit::Hittable;
-use material::{Lambertian, Material, Metal, Scatterable};
+use material::{Dielectric, Lambertian, Material, Metal, Scatterable};
 use ray::Ray;
 use scene::Scene;
 use util::Random;
@@ -90,35 +90,36 @@ impl<'a> Raytacer<'a> {
 }
 
 fn create_scene() -> Scene {
+    let ground_mat = Material::Lambertian(Lambertian {
+        albedo: Color::rgb(0.8, 0.8, 0.0),
+    });
+    let central_mat = Material::Lambertian(Lambertian {
+        albedo: Color::rgb(0.7, 0.3, 0.3),
+    });
+    let left_mat = Material::Dielectric(Dielectric::new(1.5));
+    let right_mat = Material::Metal(Metal::new(Color::rgb(0.8, 0.6, 0.2), 1.0));
+
     let mut scene = Scene::new();
     scene.add(Entity::Sphere(Sphere::new(
         Vector3::xyz(0.0, -100.5, -1.0),
         100.0,
-        Material::Lambertian(Lambertian {
-            albedo: Color::rgb(0.8, 0.8, 0.0),
-        }),
+        ground_mat,
     )));
 
     scene.add(Entity::Sphere(Sphere::new(
         Vector3::xyz(0.0, 0.0, -1.0),
         0.5,
-        Material::Lambertian(Lambertian {
-            albedo: Color::rgb(0.7, 0.3, 0.3),
-        }),
-    )));
-    scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(1.0, 0.0, -1.0),
-        0.5,
-        Material::Metal(Metal {
-            albedo: Color::rgb(0.8, 0.6, 0.2),
-        }),
+        central_mat,
     )));
     scene.add(Entity::Sphere(Sphere::new(
         Vector3::xyz(-1.0, 0.0, -1.0),
         0.5,
-        Material::Metal(Metal {
-            albedo: Color::rgb(0.8, 0.8, 0.8),
-        }),
+        left_mat,
+    )));
+    scene.add(Entity::Sphere(Sphere::new(
+        Vector3::xyz(1.0, 0.0, -1.0),
+        0.5,
+        right_mat,
     )));
 
     scene
