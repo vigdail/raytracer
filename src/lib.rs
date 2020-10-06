@@ -94,31 +94,31 @@ fn create_scene() -> Scene {
     scene.add(Box::new(Sphere::new(
         Vector3::xyz(0.0, -100.5, -1.0),
         100.0,
-        Rc::new(Box::new(Lambertian {
+        Rc::new(Lambertian {
             albedo: Color::rgb(0.8, 0.8, 0.0),
-        })),
+        }),
     )));
 
     scene.add(Box::new(Sphere::new(
         Vector3::xyz(0.0, 0.0, -1.0),
         0.5,
-        Rc::new(Box::new(Lambertian {
+        Rc::new(Lambertian {
             albedo: Color::rgb(0.7, 0.3, 0.3),
-        })),
+        }),
     )));
     scene.add(Box::new(Sphere::new(
         Vector3::xyz(1.0, 0.0, -1.0),
         0.5,
-        Rc::new(Box::new(Metal {
+        Rc::new(Metal {
             albedo: Color::rgb(0.8, 0.6, 0.2),
-        })),
+        }),
     )));
     scene.add(Box::new(Sphere::new(
         Vector3::xyz(-1.0, 0.0, -1.0),
         0.5,
-        Rc::new(Box::new(Metal {
+        Rc::new(Metal {
             albedo: Color::rgb(0.8, 0.8, 0.8),
-        })),
+        }),
     )));
 
     scene

@@ -18,7 +18,7 @@ impl Default for Face {
 pub struct HitRecord {
     pub point: Vector3,
     pub normal: Vector3,
-    pub material: Rc<Box<dyn Material>>,
+    pub material: Rc<dyn Material>,
     pub t: f32,
     pub face: Face,
 }

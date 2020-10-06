@@ -5,11 +5,11 @@ use crate::{hit::HitRecord, hit::Hittable, material::Material, ray::Ray, vector:
 pub struct Sphere {
     center: Vector3,
     radius: f32,
-    material: Rc<Box<dyn Material>>,
+    material: Rc<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Vector3, radius: f32, material: Rc<Box<dyn Material>>) -> Self {
+    pub fn new(center: Vector3, radius: f32, material: Rc<dyn Material>) -> Self {
         Self {
             center,
             radius,
