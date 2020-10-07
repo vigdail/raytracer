@@ -62,6 +62,15 @@ impl Vector3 {
             -v
         }
     }
+
+    pub fn random_in_unit_disk() -> Vector3 {
+        loop {
+            let v = Vector3::xyz(f32::random(), f32::random(), 0.0);
+            if v.squared_length() < 1.0 {
+                return v;
+            }
+        }
+    }
 }
 
 impl Random for Vector3 {

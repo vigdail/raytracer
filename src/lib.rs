@@ -39,13 +39,21 @@ impl<'a> Raytacer<'a> {
         let width = self.canvas.width();
         let height = self.canvas.height();
 
+        let look_from = Vector3::xyz(3.0, 0.6, 2.0);
+        let look_at = Vector3::xyz(0.0, 0.0, 0.0);
+        let dist_to_focus = (look_from - look_at).length();
+
         let camera = Camera::new(
-            Vector3::xyz(-2.0, 2.0, 1.0),
-            Vector3::xyz(0.0, 0.0, 0.0),
+            look_from,
+            look_at,
             Vector3::xyz(0.0, 1.0, 0.0),
-            90.0,
+            20.0,
             width as f32 / height as f32,
+            0.2,
+            dist_to_focus,
         );
+
+        println!("{:?}", camera);
 
         let scene = create_scene();
 
@@ -107,8 +115,8 @@ fn create_scene() -> Scene {
 
     let mut scene = Scene::new();
     scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(0.0, -100.5, 0.0),
-        100.0,
+        Vector3::xyz(0.0, -1000.5, 0.0),
+        1000.0,
         ground_mat,
     )));
 
@@ -118,7 +126,7 @@ fn create_scene() -> Scene {
         central_mat,
     )));
     scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(-1.0, 0.0, 0.0),
+        Vector3::xyz(-2.0, 0.0, 0.0),
         0.5,
         left_mat,
     )));
