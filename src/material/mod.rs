@@ -41,7 +41,7 @@ impl Scatterable for Lambertian {
 
         let record = ScatterRecord {
             ray: Ray::new(hit.point, scatter_direction),
-            attenuation: self.albedo.clone(),
+            attenuation: self.albedo,
         };
 
         Some(record)
@@ -77,7 +77,7 @@ impl Scatterable for Metal {
         if scattered.direction() * hit.normal > 0.0 {
             let record = ScatterRecord {
                 ray: scattered,
-                attenuation: self.albedo.clone(),
+                attenuation: self.albedo,
             };
             Some(record)
         } else {

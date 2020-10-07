@@ -50,7 +50,7 @@ impl Hittable for Sphere {
         let record = HitRecord {
             t,
             point: hit_point,
-            material: self.material.clone(),
+            material: self.material,
             normal,
             face,
         };

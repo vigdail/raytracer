@@ -83,7 +83,7 @@ impl<'a, T: Canvas> Raytacer<'a, T> {
     }
 
     fn ray_color(&mut self, ray: &Ray, scene: &Scene, depth: u32) -> Color {
-        if depth <= 0 {
+        if depth == 0 {
             return Color::new();
         }
 

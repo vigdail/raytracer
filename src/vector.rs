@@ -31,7 +31,7 @@ impl Vector3 {
     }
 
     pub fn normalized(&self) -> Vector3 {
-        let mut r = self.clone();
+        let mut r = *self;
         r.normalize();
         r
     }
