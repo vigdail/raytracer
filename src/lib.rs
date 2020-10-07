@@ -22,12 +22,12 @@ mod scene;
 mod util;
 mod vector;
 
-pub struct Raytacer<'a> {
-    canvas: &'a mut dyn Canvas,
+pub struct Raytacer<'a, T: Canvas> {
+    canvas: &'a mut T,
 }
 
-impl<'a> Raytacer<'a> {
-    pub fn new(canvas: &'a mut dyn Canvas) -> Raytacer {
+impl<'a, T: Canvas> Raytacer<'a, T> {
+    pub fn new(canvas: &'a mut T) -> Raytacer<T> {
         Raytacer { canvas }
     }
 
