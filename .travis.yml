@@ -5,6 +5,11 @@ cache: cargo
 
 os: linux
 
+addons:
+  apt:
+    packages:
+      - libsdl2-dev
+
 before_script:
   - rustup component add clippy
   - rustup component add rustfmt
