@@ -53,8 +53,6 @@ impl<'a, T: Canvas> Raytacer<'a, T> {
             dist_to_focus,
         );
 
-        println!("{:?}", camera);
-
         let scene = create_scene();
 
         let samples = 100;
