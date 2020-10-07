@@ -1,4 +1,4 @@
-use crate::{ray::Ray, vector::Vector3};
+use crate::{ray::Ray, util::deg_to_rad, vector::Vector3};
 
 pub struct Camera {
     origin: Vector3,
@@ -8,17 +8,26 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new() -> Self {
-        let aspect_ratio = 16.0 / 9.0;
-        let viewport_height = 2.0;
+    pub fn new(
+        look_from: Vector3,
+        look_at: Vector3,
+        vup: Vector3,
+        vfov: f32,
+        aspect_ratio: f32,
+    ) -> Self {
+        let theta = deg_to_rad(vfov);
+        let h = (theta / 2.0).tan();
+        let viewport_height = 2.0 * h;
         let viewport_width = viewport_height * aspect_ratio;
-        let focal_length = 1.0;
 
-        let origin = Vector3::new();
-        let horizontal = Vector3::xyz(viewport_width, 0.0, 0.0);
-        let vertical = Vector3::xyz(0.0, viewport_height, 0.0);
-        let left_bottom =
-            origin - horizontal * 0.5 - vertical * 0.5 - Vector3::xyz(0.0, 0.0, focal_length);
+        let w = (look_from - look_at).normalized();
+        let u = (vup ^ w).normalized();
+        let v = w ^ u;
+
+        let origin = look_from;
+        let horizontal = viewport_width * u;
+        let vertical = viewport_height * v;
+        let left_bottom = origin - horizontal * 0.5 - vertical * 0.5 - w;
 
         Self {
             origin,
@@ -28,10 +37,10 @@ impl Camera {
         }
     }
 
-    pub fn ray(&self, u: f32, v: f32) -> Ray {
+    pub fn ray(&self, s: f32, t: f32) -> Ray {
         Ray::new(
             self.origin,
-            self.left_bottom + u * self.horizontal + v * self.vertical,
+            self.left_bottom + s * self.horizontal + t * self.vertical - self.origin,
         )
     }
 }

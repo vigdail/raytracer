@@ -1,4 +1,4 @@
-use std::{rc::Rc, time::SystemTime};
+use std::time::SystemTime;
 
 use camera::Camera;
 use canvas::Canvas;
@@ -39,7 +39,13 @@ impl<'a> Raytacer<'a> {
         let width = self.canvas.width();
         let height = self.canvas.height();
 
-        let camera = Camera::new();
+        let camera = Camera::new(
+            Vector3::xyz(-2.0, 2.0, 1.0),
+            Vector3::xyz(0.0, 0.0, -1.0),
+            Vector3::xyz(0.0, 1.0, 0.0),
+            90.0,
+            width as f32 / height as f32,
+        );
 
         let scene = create_scene();
 
