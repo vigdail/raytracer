@@ -41,7 +41,7 @@ impl<'a> Raytacer<'a> {
 
         let camera = Camera::new(
             Vector3::xyz(-2.0, 2.0, 1.0),
-            Vector3::xyz(0.0, 0.0, -1.0),
+            Vector3::xyz(0.0, 0.0, 0.0),
             Vector3::xyz(0.0, 1.0, 0.0),
             90.0,
             width as f32 / height as f32,
@@ -76,14 +76,14 @@ impl<'a> Raytacer<'a> {
         println!("Done: {} ms", now.elapsed().unwrap().as_millis());
     }
 
-    fn ray_color(&mut self, ray: &Ray, scene: &Scene, depht: u32) -> Color {
-        if depht <= 0 {
+    fn ray_color(&mut self, ray: &Ray, scene: &Scene, depth: u32) -> Color {
+        if depth <= 0 {
             return Color::new();
         }
 
         if let Some(hit) = scene.hit(ray, 0.001, std::f32::INFINITY) {
             if let Some(scatter) = hit.material.scatter(ray, &hit) {
-                return scatter.attenuation * self.ray_color(&scatter.ray, scene, depht - 1);
+                return scatter.attenuation * self.ray_color(&scatter.ray, scene, depth - 1);
             }
             return Color::new();
         }
@@ -107,23 +107,23 @@ fn create_scene() -> Scene {
 
     let mut scene = Scene::new();
     scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(0.0, -100.5, -1.0),
+        Vector3::xyz(0.0, -100.5, 0.0),
         100.0,
         ground_mat,
     )));
 
     scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(0.0, 0.0, -1.0),
+        Vector3::xyz(0.0, 0.0, 0.0),
         0.5,
         central_mat,
     )));
     scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(-1.0, 0.0, -1.0),
+        Vector3::xyz(-1.0, 0.0, 0.0),
         0.5,
         left_mat,
     )));
     scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(1.0, 0.0, -1.0),
+        Vector3::xyz(1.0, 0.0, 0.0),
         0.5,
         right_mat,
     )));

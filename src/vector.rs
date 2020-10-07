@@ -174,7 +174,7 @@ impl std::ops::BitXor<Vector3> for Vector3 {
     type Output = Vector3;
 
     fn bitxor(self, rhs: Vector3) -> Self::Output {
-        let x = self.y * rhs.z - self.y * rhs.z;
+        let x = self.y * rhs.z - self.z * rhs.y;
         let y = self.z * rhs.x - self.x * rhs.z;
         let z = self.x * rhs.y - self.y * rhs.x;
         Vector3::xyz(x, y, z)
@@ -226,11 +226,21 @@ mod test {
     }
 
     #[test]
+    fn sub() {
+        let a = Vector3::xyz(2.0, 11.5, 4.0);
+        let b = Vector3::xyz(1.0, -11.5, 5.0);
+
+        let expected = Vector3::xyz(1.0, 23.0, -1.0);
+
+        assert_eq!(a - b, expected);
+    }
+
+    #[test]
     fn dot_product() {
         let a = Vector3::xyz(2.0, 3.0, 5.0);
-        let b = Vector3::xyz(3.0, 2.0, 0.0);
+        let b = Vector3::xyz(3.0, -2.0, 0.0);
 
-        let expected = 6.0 + 6.0 + 0.0;
+        let expected = 6.0 - 6.0 + 0.0;
 
         assert_eq!(a * b, expected);
     }
@@ -276,6 +286,20 @@ mod test {
         let b = Vector3::xyz(0.0, 1.0, 0.0);
 
         let expect = Vector3::xyz(0.0, 0.0, 1.0);
+
+        assert_eq!(a ^ b, expect);
+
+        let a = Vector3::xyz(0.0, 0.0, 1.0);
+        let b = Vector3::xyz(0.0, 1.0, 0.0);
+
+        let expect = Vector3::xyz(-1.0, 0.0, 0.0);
+
+        assert_eq!(a ^ b, expect);
+
+        let a = Vector3::xyz(0.0, 0.0, 1.0);
+        let b = Vector3::xyz(0.0, 0.0, 1.0);
+
+        let expect = Vector3::xyz(0.0, 0.0, 0.0);
 
         assert_eq!(a ^ b, expect);
     }
