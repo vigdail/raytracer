@@ -1,4 +1,11 @@
-use crate::{color::Color, hit::Face, hit::HitRecord, ray::Ray, util::Random, vector::Vector3};
+use crate::{
+    color::Color,
+    hit::Face,
+    hit::HitRecord,
+    ray::Ray,
+    util::{Random, RandomRange},
+    vector::Vector3,
+};
 
 pub struct ScatterRecord {
     pub ray: Ray,
@@ -30,9 +37,26 @@ impl Scatterable for Material {
     }
 }
 
+impl Random for Material {
+    fn random() -> Self {
+        let r = f32::random_range(0.0, 3.0);
+        match r {
+            r if r < 1.2 => Material::Lambertian(Lambertian::random()),
+            r if r < 2.4 => Material::Metal(Metal::random()),
+            _ => Material::Dielectric(Dielectric::random()),
+        }
+    }
+}
+
 #[derive(Clone, Copy)]
 pub struct Lambertian {
     pub albedo: Color,
+}
+
+impl Lambertian {
+    pub fn new(albedo: Color) -> Self {
+        Self { albedo }
+    }
 }
 
 impl Scatterable for Lambertian {
@@ -45,6 +69,14 @@ impl Scatterable for Lambertian {
         };
 
         Some(record)
+    }
+}
+
+impl Random for Lambertian {
+    fn random() -> Self {
+        let albedo = Color::rgb(f32::random(), f32::random(), f32::random());
+
+        Lambertian { albedo }
     }
 }
 
@@ -65,7 +97,6 @@ impl Metal {
         Metal { albedo, fuzz }
     }
 }
-
 impl Scatterable for Metal {
     fn scatter(&self, ray: &Ray, hit: &HitRecord) -> Option<ScatterRecord> {
         let reflected = Metal::reflect(ray.direction(), hit.normal);
@@ -83,6 +114,15 @@ impl Scatterable for Metal {
         } else {
             None
         }
+    }
+}
+
+impl Random for Metal {
+    fn random() -> Self {
+        let albedo = Color::rgb(f32::random(), f32::random(), f32::random());
+        let fuzz = f32::random();
+
+        Metal::new(albedo, fuzz)
     }
 }
 
@@ -137,5 +177,11 @@ impl Scatterable for Dielectric {
             attenuation: Color::rgb(1.0, 1.0, 1.0),
             ray: scattered,
         })
+    }
+}
+
+impl Random for Dielectric {
+    fn random() -> Self {
+        Dielectric::new(f32::random_range(0.0, 5.0))
     }
 }

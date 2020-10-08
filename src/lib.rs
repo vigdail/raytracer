@@ -39,7 +39,7 @@ impl<'a, T: Canvas> Raytacer<'a, T> {
         let width = self.canvas.width();
         let height = self.canvas.height();
 
-        let look_from = Vector3::xyz(3.0, 0.6, 2.0);
+        let look_from = Vector3::xyz(13.0, 2.0, 3.0);
         let look_at = Vector3::xyz(0.0, 0.0, 0.0);
         let dist_to_focus = (look_from - look_at).length();
 
@@ -47,15 +47,15 @@ impl<'a, T: Canvas> Raytacer<'a, T> {
             look_from,
             look_at,
             Vector3::xyz(0.0, 1.0, 0.0),
-            20.0,
+            100.0,
             width as f32 / height as f32,
-            0.2,
+            0.1,
             dist_to_focus,
         );
 
         let scene = create_scene();
 
-        let samples = 100;
+        let samples = 20;
         let max_depth = 50;
 
         let now = SystemTime::now();
@@ -103,35 +103,51 @@ impl<'a, T: Canvas> Raytacer<'a, T> {
 
 fn create_scene() -> Scene {
     let ground_mat = Material::Lambertian(Lambertian {
-        albedo: Color::rgb(0.8, 0.8, 0.0),
+        albedo: Color::rgb(0.5, 0.5, 0.5),
     });
-    let central_mat = Material::Lambertian(Lambertian {
-        albedo: Color::rgb(0.7, 0.3, 0.3),
-    });
-    let left_mat = Material::Dielectric(Dielectric::new(1.5));
-    let right_mat = Material::Metal(Metal::new(Color::rgb(0.8, 0.6, 0.2), 1.0));
 
     let mut scene = Scene::new();
     scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(0.0, -1000.5, 0.0),
+        Vector3::xyz(0.0, -1000.0, 0.0),
         1000.0,
         ground_mat,
     )));
 
+    let size = 11;
+    for i in -size..size {
+        for j in -size..size {
+            let material = Material::random();
+            let center = Vector3::xyz(
+                i as f32 + 0.9 * f32::random(),
+                0.2,
+                j as f32 + 0.9 * f32::random(),
+            );
+
+            let sphere = Sphere::new(center, 0.2, material);
+
+            scene.add(Entity::Sphere(sphere));
+        }
+    }
+
+    let material1 = Material::Dielectric(Dielectric::new(1.5));
     scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(0.0, 0.0, 0.0),
-        0.5,
-        central_mat,
+        Vector3::xyz(0.0, 1.0, 0.0),
+        1.0,
+        material1,
     )));
+
+    let material2 = Material::Lambertian(Lambertian::new(Color::rgb(0.4, 0.2, 0.1)));
     scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(-2.0, 0.0, 0.0),
-        0.5,
-        left_mat,
+        Vector3::xyz(-4.0, 1.0, 0.0),
+        1.0,
+        material2,
     )));
+
+    let material3 = Material::Metal(Metal::new(Color::rgb(0.4, 0.2, 0.1), 0.0));
     scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(1.0, 0.0, 0.0),
-        0.5,
-        right_mat,
+        Vector3::xyz(4.0, 1.0, 0.0),
+        1.0,
+        material3,
     )));
 
     scene
