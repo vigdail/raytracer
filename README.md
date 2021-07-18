@@ -8,7 +8,7 @@ Written by this awesome [_Ray Tracing in One Weekend_](https://raytracing.github
 
 ## Run
 
-Release version much faster than debug. So prefer to run relese.
+Release version much faster than debug. So prefer to run release.
 
 ```code
 cargo run --release
