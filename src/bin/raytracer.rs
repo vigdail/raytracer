@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use sdl2::{event::Event, keyboard::Keycode};
 
-use raytracer::Raytacer;
+use raytracer::Raytracer;
 
 const FPS: u32 = 60;
 
@@ -20,7 +20,7 @@ fn main() -> Result<(), String> {
 
     let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
 
-    let mut rt = Raytacer::new(&mut canvas);
+    let mut rt = Raytracer::new(&mut canvas);
 
     let mut event_pump = sdl_context.event_pump()?;
 
@@ -44,3 +44,4 @@ fn main() -> Result<(), String> {
     }
     Ok(())
 }
+

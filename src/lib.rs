@@ -22,13 +22,13 @@ mod scene;
 mod util;
 mod vector;
 
-pub struct Raytacer<'a, T: Canvas> {
+pub struct Raytracer<'a, T: Canvas> {
     canvas: &'a mut T,
 }
 
-impl<'a, T: Canvas> Raytacer<'a, T> {
-    pub fn new(canvas: &'a mut T) -> Raytacer<T> {
-        Raytacer { canvas }
+impl<'a, T: Canvas> Raytracer<'a, T> {
+    pub fn new(canvas: &'a mut T) -> Raytracer<T> {
+        Raytracer { canvas }
     }
 
     pub fn render(&mut self) {
@@ -87,7 +87,7 @@ impl<'a, T: Canvas> Raytacer<'a, T> {
             return Color::new();
         }
 
-        if let Some(hit) = scene.hit(ray, 0.001, std::f32::INFINITY) {
+        if let Some(hit) = scene.hit(ray, 0.001, f32::INFINITY) {
             if let Some(scatter) = hit.material.scatter(ray, &hit) {
                 return scatter.attenuation * self.ray_color(&scatter.ray, scene, depth - 1);
             }
