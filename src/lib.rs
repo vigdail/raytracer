@@ -3,24 +3,23 @@ use std::time::SystemTime;
 use camera::Camera;
 use canvas::Canvas;
 use color::Color;
-use entity::{sphere::Sphere, Entity};
 use hit::Hittable;
-use material::{Dielectric, Lambertian, Material, Metal, Scatterable};
+use material::Scatterable;
 use ray::Ray;
 use scene::Scene;
 use util::Random;
 use vector::Vector3;
 
-mod camera;
-mod canvas;
-mod color;
-mod entity;
-mod hit;
-mod material;
-mod ray;
-mod scene;
-mod util;
-mod vector;
+pub mod camera;
+pub mod canvas;
+pub mod color;
+pub mod entity;
+pub mod hit;
+pub mod material;
+pub mod ray;
+pub mod scene;
+pub mod util;
+pub mod vector;
 
 pub struct Raytracer<'a, T: Canvas> {
     canvas: &'a mut T,
@@ -31,11 +30,11 @@ impl<'a, T: Canvas> Raytracer<'a, T> {
         Raytracer { canvas }
     }
 
-    pub fn render(&mut self) {
-        self.draw_scene();
+    pub fn render(&mut self, scene: &Scene) {
+        self.draw_scene(scene);
     }
 
-    fn draw_scene(&mut self) {
+    fn draw_scene(&mut self, scene: &Scene) {
         let width = self.canvas.width();
         let height = self.canvas.height();
 
@@ -52,8 +51,6 @@ impl<'a, T: Canvas> Raytracer<'a, T> {
             0.1,
             dist_to_focus,
         );
-
-        let scene = create_scene();
 
         let samples = 20;
         let max_depth = 50;
@@ -99,56 +96,4 @@ impl<'a, T: Canvas> Raytracer<'a, T> {
         let v = (1.0 - t) * Vector3::xyz(1.0, 1.0, 1.0) + t * Vector3::xyz(0.5, 0.7, 1.0);
         Color::rgb(v.x, v.y, v.z)
     }
-}
-
-fn create_scene() -> Scene {
-    let ground_mat = Material::Lambertian(Lambertian {
-        albedo: Color::rgb(0.5, 0.5, 0.5),
-    });
-
-    let mut scene = Scene::new();
-    scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(0.0, -1000.0, 0.0),
-        1000.0,
-        ground_mat,
-    )));
-
-    let size = 11;
-    for i in -size..size {
-        for j in -size..size {
-            let material = Material::random();
-            let center = Vector3::xyz(
-                i as f32 + 0.9 * f32::random(),
-                0.2,
-                j as f32 + 0.9 * f32::random(),
-            );
-
-            let sphere = Sphere::new(center, 0.2, material);
-
-            scene.add(Entity::Sphere(sphere));
-        }
-    }
-
-    let material1 = Material::Dielectric(Dielectric::new(1.5));
-    scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(0.0, 1.0, 0.0),
-        1.0,
-        material1,
-    )));
-
-    let material2 = Material::Lambertian(Lambertian::new(Color::rgb(0.4, 0.2, 0.1)));
-    scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(-4.0, 1.0, 0.0),
-        1.0,
-        material2,
-    )));
-
-    let material3 = Material::Metal(Metal::new(Color::rgb(0.4, 0.2, 0.1), 0.0));
-    scene.add(Entity::Sphere(Sphere::new(
-        Vector3::xyz(4.0, 1.0, 0.0),
-        1.0,
-        material3,
-    )));
-
-    scene
 }
