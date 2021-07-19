@@ -3,15 +3,18 @@ use crate::{
     hit::{HitRecord, Hittable},
     ray::Ray,
 };
+use crate::camera::Camera;
 
 pub struct Scene {
+    pub camera: Camera,
     entities: Vec<Entity>,
 }
 
 impl Scene {
-    pub fn new() -> Self {
+    pub fn new(camera: Camera) -> Self {
         Self {
             entities: Vec::new(),
+            camera,
         }
     }
 

@@ -1,6 +1,5 @@
 use std::time::SystemTime;
 
-use camera::Camera;
 use canvas::Canvas;
 use color::Color;
 use hit::Hittable;
@@ -44,19 +43,6 @@ impl<'a, T: Canvas> Raytracer<'a, T> {
         let width = self.canvas.width();
         let height = self.canvas.height();
 
-        let look_from = Vector3::xyz(13.0, 2.0, 3.0);
-        let look_at = Vector3::xyz(0.0, 0.0, 0.0);
-        let dist_to_focus = (look_from - look_at).length();
-
-        let camera = Camera::new(
-            look_from,
-            look_at,
-            Vector3::xyz(0.0, 1.0, 0.0),
-            60.0,
-            width as f32 / height as f32,
-            0.1,
-            dist_to_focus,
-        );
 
         let samples = self.options.samples;
         let max_scatter = self.options.max_scatter;
@@ -71,7 +57,7 @@ impl<'a, T: Canvas> Raytracer<'a, T> {
                     let dj = f32::random();
                     let u = (i as f32 + di) / width as f32;
                     let v = (j as f32 + dj) / height as f32;
-                    let ray = camera.ray(u, v);
+                    let ray = scene.camera.ray(u, v);
                     color += self.ray_color(&ray, &scene, max_scatter);
                 }
 

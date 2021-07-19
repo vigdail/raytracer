@@ -10,6 +10,8 @@ use raytracer::entity::Entity;
 use raytracer::entity::sphere::Sphere;
 use raytracer::vector::Vector3;
 use raytracer::util::Random;
+use raytracer::camera::Camera;
+use raytracer::canvas::Canvas;
 
 const FPS: u32 = 60;
 
@@ -27,8 +29,8 @@ fn main() -> Result<(), String> {
 
     let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
 
+    let scene = create_scene(canvas.width(), canvas.height());
     let mut rt = Raytracer::new(&mut canvas, RenderOptions {samples: 10, max_scatter: 10});
-    let scene = create_scene();
 
     let mut event_pump = sdl_context.event_pump()?;
 
@@ -53,12 +55,26 @@ fn main() -> Result<(), String> {
     Ok(())
 }
 
-fn create_scene() -> Scene {
+fn create_scene(width: u32, height: u32) -> Scene {
+    let look_from = Vector3::xyz(13.0, 2.0, 3.0);
+    let look_at = Vector3::xyz(0.0, 0.0, 0.0);
+    let dist_to_focus = (look_from - look_at).length();
+
+    let camera = Camera::new(
+        look_from,
+        look_at,
+        Vector3::xyz(0.0, 1.0, 0.0),
+        60.0,
+        width as f32 / height as f32,
+        0.1,
+        dist_to_focus,
+    );
+
     let ground_mat = Material::Lambertian(Lambertian {
         albedo: Color::rgb(0.5, 0.5, 0.5),
     });
 
-    let mut scene = Scene::new();
+    let mut scene = Scene::new(camera);
     scene.add(Entity::Sphere(Sphere::new(
         Vector3::xyz(0.0, -1000.0, 0.0),
         1000.0,
