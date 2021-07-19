@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use sdl2::{event::Event, keyboard::Keycode};
 
-use raytracer::{Raytracer};
+use raytracer::{Raytracer, RenderOptions};
 use raytracer::scene::Scene;
 use raytracer::material::{Material, Lambertian, Dielectric, Metal};
 use raytracer::color::Color;
@@ -27,7 +27,7 @@ fn main() -> Result<(), String> {
 
     let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
 
-    let mut rt = Raytracer::new(&mut canvas);
+    let mut rt = Raytracer::new(&mut canvas, RenderOptions {samples: 10, max_scatter: 10});
     let scene = create_scene();
 
     let mut event_pump = sdl_context.event_pump()?;

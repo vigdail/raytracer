@@ -21,13 +21,19 @@ pub mod scene;
 pub mod util;
 pub mod vector;
 
+pub struct RenderOptions {
+    pub samples: u32,
+    pub max_scatter: u32,
+}
+
 pub struct Raytracer<'a, T: Canvas> {
     canvas: &'a mut T,
+    options: RenderOptions,
 }
 
 impl<'a, T: Canvas> Raytracer<'a, T> {
-    pub fn new(canvas: &'a mut T) -> Raytracer<T> {
-        Raytracer { canvas }
+    pub fn new(canvas: &'a mut T, options: RenderOptions) -> Raytracer<T> {
+        Raytracer { canvas, options }
     }
 
     pub fn render(&mut self, scene: &Scene) {
@@ -46,14 +52,14 @@ impl<'a, T: Canvas> Raytracer<'a, T> {
             look_from,
             look_at,
             Vector3::xyz(0.0, 1.0, 0.0),
-            100.0,
+            60.0,
             width as f32 / height as f32,
             0.1,
             dist_to_focus,
         );
 
-        let samples = 20;
-        let max_depth = 50;
+        let samples = self.options.samples;
+        let max_scatter = self.options.max_scatter;
 
         let now = SystemTime::now();
 
@@ -66,7 +72,7 @@ impl<'a, T: Canvas> Raytracer<'a, T> {
                     let u = (i as f32 + di) / width as f32;
                     let v = (j as f32 + dj) / height as f32;
                     let ray = camera.ray(u, v);
-                    color += self.ray_color(&ray, &scene, max_depth);
+                    color += self.ray_color(&ray, &scene, max_scatter);
                 }
 
                 color.r = (color.r / samples as f32).sqrt();
@@ -79,14 +85,14 @@ impl<'a, T: Canvas> Raytracer<'a, T> {
         println!("Done: {} ms", now.elapsed().unwrap().as_millis());
     }
 
-    fn ray_color(&mut self, ray: &Ray, scene: &Scene, depth: u32) -> Color {
-        if depth == 0 {
+    fn ray_color(&mut self, ray: &Ray, scene: &Scene, scatters_count: u32) -> Color {
+        if scatters_count == 0 {
             return Color::new();
         }
 
         if let Some(hit) = scene.hit(ray, 0.001, f32::INFINITY) {
             if let Some(scatter) = hit.material.scatter(ray, &hit) {
-                return scatter.attenuation * self.ray_color(&scatter.ray, scene, depth - 1);
+                return scatter.attenuation * self.ray_color(&scatter.ray, scene, scatters_count - 1);
             }
             return Color::new();
         }
