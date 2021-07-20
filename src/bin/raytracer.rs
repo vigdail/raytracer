@@ -2,16 +2,21 @@ use std::time::Duration;
 
 use sdl2::{event::Event, keyboard::Keycode};
 
-use raytracer::{Raytracer, RenderOptions};
-use raytracer::scene::Scene;
-use raytracer::material::{Material, Lambertian, Dielectric, Metal};
-use raytracer::color::Color;
-use raytracer::entity::Entity;
-use raytracer::entity::sphere::Sphere;
-use raytracer::vector::Vector3;
-use raytracer::util::Random;
-use raytracer::camera::Camera;
-use raytracer::canvas::Canvas;
+use raytracer::{
+    RenderOptions,
+    Raytracer,
+    scene::Scene,
+    material::{Material, Lambertian, Dielectric, Metal},
+    color::Color,
+    entity::Entity,
+    entity::sphere::Sphere,
+    vector::Vector3,
+    util::Random,
+    camera::Camera,
+    canvas::Canvas,
+    tile::TileConfig
+};
+use std::sync::Arc;
 
 const FPS: u32 = 60;
 
@@ -30,11 +35,15 @@ fn main() -> Result<(), String> {
     let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
 
     let scene = create_scene(canvas.width(), canvas.height());
-    let mut rt = Raytracer::new(&mut canvas, RenderOptions {samples: 10, max_scatter: 10});
+    let mut rt = Raytracer::new(&mut canvas, RenderOptions {
+        samples: 10,
+        max_scatter: 10,
+        tile_config: TileConfig::new(128, 72),
+    });
 
     let mut event_pump = sdl_context.event_pump()?;
 
-    rt.render(&scene);
+    rt.render(Arc::new(scene));
 
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -56,7 +65,7 @@ fn main() -> Result<(), String> {
 }
 
 fn create_scene(width: u32, height: u32) -> Scene {
-    let look_from = Vector3::xyz(13.0, 2.0, 3.0);
+    let look_from = Vector3::xyz(8.0, 2.0, 3.0);
     let look_at = Vector3::xyz(0.0, 0.0, 0.0);
     let dist_to_focus = (look_from - look_at).length();
 
