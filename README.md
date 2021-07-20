@@ -6,6 +6,8 @@ Simple raytracer made in Rust.
 
 Written by this awesome [_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html) tutorial.
 
+![result](images/render.png)
+
 ## Run
 
 Release version is much faster than debug. So prefer to run release.
